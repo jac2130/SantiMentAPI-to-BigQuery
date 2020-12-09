@@ -4,6 +4,7 @@ import numpy as np
 #import statsmodels.formula.api as smf
 #from utils import get_san_metric
 import san
+san.ApiConfig.api_key = 'bajd3fwy257xdmiz_xqbew5vh4u3vrahd'
 import pandas as pd 
 #all_projects = san.get("projects/all")
 N=3
@@ -16,31 +17,14 @@ assets=['bitcoin', 'ethereum']#, 'bitcoin']
 # create batch object
 #batch = san.Batch()
 
-asset_dict={}
-# create a request
+my_string ="""{
+    projectBySlug(slug: "santiment") {"""
 
-for asset in assets:
-    all_metrics=san.available_metrics_for_slug(asset)
-    batch = san.Batch()
-    for metric in sorted(all_metrics)[:int(len(all_metrics)/2)]:
+all_metrics = {asset: san.available_metrics_for_slug(asset) for asset in assets}
 
-    #batch=san.Batch()
-        batch.get(
-            f'{metric}/{asset}',
-            from_date=from_date,
-            to_date=to_date,
-            interval=interval
-        )
-    
-
-    #ex_flow = get_san_metric(from_date, to_date, 'exchange_funds_flow', asset, interval='1d', iterate_over_days=700)
- 
-    [daa, dad, price, others] = batch.execute()
-    daa['asset']=asset
-    asset_dict[asset] = daa.rename(columns={'value':'activeAddresses', 'asset':'asset'}).join(dad).join(price[['priceUsd', 'priceBtc', 'volume']]).join(others) #.fillna(0)
-    #price['asset'] =asset
-    print(asset, asset_dict[asset].head())
-
+queries=["""{
+  projectBySlug(slug: "{slug}") {""" for slug in assets]
+  
 # merge dataframes
 #data = daa.rename(columns={'value':'activeAddresses'}).join(dad).join(price['priceUsd'])
 #data['asset']=asset
